@@ -8,8 +8,12 @@ import android.widget.TextView
 import com.example.weather.retrofit.IWeatherApi
 import com.example.weather.retrofit.WeatherNetwork
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -38,7 +42,9 @@ class MainActivity : AppCompatActivity() {
         button.setOnClickListener {
             val city = editText.text.toString()
 
-            CoroutineScope(Dispatchers.IO).launch {
+
+            val deffered : Deferred<String> = CoroutineScope(Dispatchers.IO).async { "hb" }
+            val job: Job = CoroutineScope(Dispatchers.IO).launch {
                 try {
                     val weather = weatherNetwork.getWeatherByCityName(city)
                     val result = weatherRepository.getConvertedResult(weather)
@@ -52,6 +58,12 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
             }
+            runBlocking {
+                job.join()
+                //все корутины завершены
+            }
+
         }
     }
 }
+val str: String = "dcw"
