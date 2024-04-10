@@ -5,14 +5,18 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
-import com.example.weather.retrofit.WeatherApi
+import com.example.weather.retrofit.IWeatherApi
+import com.example.weather.retrofit.WeatherNetwork
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 class MainActivity : AppCompatActivity() {
+    private val weatherNetwork = WeatherNetwork()
+    private val weatherRepository = WeatherRepository()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -28,20 +32,24 @@ class MainActivity : AppCompatActivity() {
             .build()
 
 
-        val weatherApi = retrofit.create(WeatherApi::class.java)
+        val weatherApi = retrofit.create(IWeatherApi::class.java)
 
 
-        button.setOnClickListener(){
+        button.setOnClickListener {
+            val city = editText.text.toString()
+
             CoroutineScope(Dispatchers.IO).launch {
-                val city = editText.text.trim().toString()
-                val weather = weatherApi.getWeatherByCityName(city, API_KEY, "metric", "ru")
-                runOnUiThread(){
-                    textView.text = weather.main.temp.toString() +"\n" +
-                            weather.weatherDetail[0].description + "\n" +
-                            weather.weatherDetail[0].main + "\n" +
-                            weather.clouds.toString() + "\n" +
-                            weather.timezone.toString()
+                try {
+                    val weather = weatherNetwork.getWeatherByCityName(city)
+                    val result = weatherRepository.getConvertedResult(weather)
 
+                    withContext(Dispatchers.Main) {
+                        textView.text = result
+                    }
+                } catch (e: Exception) {
+                    withContext(Dispatchers.Main) {
+                        textView.text = "Ошибка получения данных"
+                    }
                 }
             }
         }
