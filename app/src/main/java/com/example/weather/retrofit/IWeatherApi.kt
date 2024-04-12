@@ -34,6 +34,6 @@ interface IWeatherNetwork{
     }
 
      override suspend fun getWeatherByCityName(city: String): Weather {
-         return weatherApi.getWeatherByCityName(city, API_KEY, METRIC, LOCALE)
+         return weatherApi.getWeatherByCityName(city=city, API_KEY, METRIC, LOCALE)
      }
 }
