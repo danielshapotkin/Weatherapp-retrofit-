@@ -18,7 +18,6 @@ interface IWeatherApi {
 interface IWeatherNetwork{
     suspend fun getWeatherByCityName(city: String): Weather
 }
-var str:String = "niin"
  class WeatherNetwork:IWeatherNetwork {
     private val weatherApi: IWeatherApi
      private val API_KEY = "9cbbdbaf4f0aa3a2b5558f122d628b22"
