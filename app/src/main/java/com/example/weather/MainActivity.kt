@@ -1,10 +1,14 @@
 package com.example.weather
 
+import android.app.ProgressDialog
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.OnLifecycleEvent
 import com.example.weather.retrofit.IWeatherApi
 import com.example.weather.retrofit.WeatherNetwork
 import kotlinx.coroutines.CoroutineScope
@@ -39,31 +43,47 @@ class MainActivity : AppCompatActivity() {
         val weatherApi = retrofit.create(IWeatherApi::class.java)
 
 
+
         button.setOnClickListener {
-            val city = editText.text.toString()
+            val city = editText.text.toString().trim()
+            val networkUtils = NetworkUtils(this@MainActivity)
+            val progressDialogUtils = PogressDialogUtils(this@MainActivity)
 
+            val job = CoroutineScope(Dispatchers.Main).launch {
+                progressDialogUtils.showProgressDialog()
 
-            val deffered : Deferred<String> = CoroutineScope(Dispatchers.IO).async { "hb" }
-            val job: Job = CoroutineScope(Dispatchers.IO).launch {
                 try {
-                    val weather = weatherNetwork.getWeatherByCityName(city)
-                    val result = weatherRepository.getConvertedResult(weather)
+                    if (!networkUtils.isNetworkAvailable()) {
+                        throw Exception("Отсутствует интернет-соединение")
+                    }
 
-                    withContext(Dispatchers.Main) {
-                        textView.text = result
+                    val deferred = CoroutineScope(Dispatchers.IO).async {
+                        val weather = weatherNetwork.getWeatherByCityName(city)
+                        val result = weatherRepository.getConvertedResult(weather)
+                        result
                     }
+
+                    val result = deferred.await()
+
+                    textView.text = result
                 } catch (e: Exception) {
-                    withContext(Dispatchers.Main) {
-                        textView.text = "Ошибка получения данных"
+                    textView.text = when (e.message) {
+                        "Отсутствует интернет-соединение" -> "Ошибка, отсутствует интернет-соединение"
+                        else -> "Ошибка, город $city не найден"
                     }
+                } finally {
+                    progressDialogUtils.dismissProgressDialog()
                 }
             }
-            runBlocking {
-                job.join()
-                //все корутины завершены
-            }
 
+            // Отмена корутины при уничтожении активности (например, при закрытии приложения)
+            lifecycle.addObserver(object : LifecycleObserver {
+                @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
+                fun onDestroy() {
+                    job.cancel()
+                }
+            })
         }
+
     }
 }
-val str: String = "dcw"
