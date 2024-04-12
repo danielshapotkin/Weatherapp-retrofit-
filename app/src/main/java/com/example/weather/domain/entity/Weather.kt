@@ -1,4 +1,4 @@
-package com.example.weather.retrofit
+package com.example.weather.domain.entity
 
 import com.google.gson.annotations.SerializedName
 

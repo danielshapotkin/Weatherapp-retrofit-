@@ -1,5 +1,6 @@
 package com.example.weather.retrofit
 
+import com.example.weather.domain.entity.Weather
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
@@ -16,7 +17,7 @@ interface IWeatherApi {
 
 }
 interface IWeatherNetwork{
-    suspend fun getWeatherByCityName(city: String): Weather
+    suspend fun getWeatherByCityName(city: String): Weather?
 }
  class WeatherNetwork:IWeatherNetwork {
     private val weatherApi: IWeatherApi
@@ -33,6 +34,6 @@ interface IWeatherNetwork{
     }
 
      override suspend fun getWeatherByCityName(city: String): Weather {
-         return weatherApi.getWeatherByCityName(city=city, API_KEY, METRIC, LOCALE)
+         return weatherApi.getWeatherByCityName(city, API_KEY, METRIC, LOCALE)
      }
 }

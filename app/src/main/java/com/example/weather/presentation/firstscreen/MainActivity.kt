@@ -1,30 +1,32 @@
-package com.example.weather
+package com.example.weather.presentation.firstscreen
 
-import android.app.ProgressDialog
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
+import android.view.View.OnClickListener
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
-import com.example.weather.retrofit.IWeatherApi
+import com.example.weather.data.NetworkUtils
+import com.example.weather.PogressDialogUtils
+import com.example.weather.R
+import com.example.weather.domain.repository.IWeatherRepository
+import com.example.weather.retrofit.IWeatherNetwork
 import com.example.weather.retrofit.WeatherNetwork
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
-class MainActivity : AppCompatActivity() {
-    private val weatherNetwork = WeatherNetwork()
-    private val weatherRepository = WeatherRepository()
+class MainActivity : AppCompatActivity(), OnClickListener {
+
+    private val weatherNetwork : IWeatherNetwork = WeatherNetwork()
+    private val weatherRepository : IWeatherRepository =   IWeatherRepository.getWeatherRepository(weatherNetwork)
+
+    private val networkUtils = NetworkUtils(this@MainActivity)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -33,20 +35,8 @@ class MainActivity : AppCompatActivity() {
         val textView = findViewById<TextView>(R.id.textView)
         val button = findViewById<Button>(R.id.button)
 
-
-        val retrofit = Retrofit.Builder()
-            .baseUrl("https://api.openweathermap.org/data/2.5/")
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-
-
-        val weatherApi = retrofit.create(IWeatherApi::class.java)
-
-
-
         button.setOnClickListener {
             val city = editText.text.toString().trim()
-            val networkUtils = NetworkUtils(this@MainActivity)
             val progressDialogUtils = PogressDialogUtils(this@MainActivity)
 
             val job = CoroutineScope(Dispatchers.Main).launch {
@@ -56,15 +46,9 @@ class MainActivity : AppCompatActivity() {
                     if (!networkUtils.isNetworkAvailable()) {
                         throw Exception("Отсутствует интернет-соединение")
                     }
-
-                    val deferred = CoroutineScope(Dispatchers.IO).async {
-                        val weather = weatherNetwork.getWeatherByCityName(city)
-                        val result = weatherRepository.getConvertedResult(weather)
-                        result
+                    val result = withContext(Dispatchers.IO) {
+                         weatherRepository.getWeatherByCityName(city)
                     }
-
-                    val result = deferred.await()
-
                     textView.text = result
                 } catch (e: Exception) {
                     textView.text = when (e.message) {
@@ -84,6 +68,10 @@ class MainActivity : AppCompatActivity() {
                 }
             })
         }
+
+    }
+
+    override fun onClick(v: View?) {
 
     }
 }
