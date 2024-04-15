@@ -1,5 +1,6 @@
 package com.example.weather.presentation.firstscreen
 
+import WeatherViewModel
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
@@ -10,6 +11,7 @@ import android.widget.TextView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
+import androidx.lifecycle.ViewModelProvider
 import com.example.weather.data.NetworkUtils
 import com.example.weather.PogressDialogUtils
 import com.example.weather.R
@@ -21,12 +23,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class MainActivity : AppCompatActivity(), OnClickListener {
-
+class FirstScreenActivity : AppCompatActivity(), OnClickListener {
+    private lateinit var weatherViewModel: WeatherViewModel
     private val weatherNetwork : IWeatherNetwork = WeatherNetwork()
     private val weatherRepository : IWeatherRepository =   IWeatherRepository.getWeatherRepository(weatherNetwork)
-
-    private val networkUtils = NetworkUtils(this@MainActivity)
+    private val networkUtils = NetworkUtils(this@FirstScreenActivity)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -35,9 +36,16 @@ class MainActivity : AppCompatActivity(), OnClickListener {
         val textView = findViewById<TextView>(R.id.textView)
         val button = findViewById<Button>(R.id.button)
 
+        weatherViewModel = ViewModelProvider(this).get(WeatherViewModel::class.java)
+        weatherViewModel.weatherInfo.observe(this) { weather ->
+            textView.text = weather
+        }
+
+
+
         button.setOnClickListener {
             val city = editText.text.toString().trim()
-            val progressDialogUtils = PogressDialogUtils(this@MainActivity)
+            val progressDialogUtils = PogressDialogUtils(this@FirstScreenActivity)
 
             val job = CoroutineScope(Dispatchers.Main).launch {
                 progressDialogUtils.showProgressDialog()
@@ -49,7 +57,7 @@ class MainActivity : AppCompatActivity(), OnClickListener {
                     val result = withContext(Dispatchers.IO) {
                          weatherRepository.getWeatherByCityName(city)
                     }
-                    textView.text = result
+                    weatherViewModel.weatherInfo.value = result
                 } catch (e: Exception) {
                     textView.text = when (e.message) {
                         "Отсутствует интернет-соединение" -> "Ошибка, отсутствует интернет-соединение"
