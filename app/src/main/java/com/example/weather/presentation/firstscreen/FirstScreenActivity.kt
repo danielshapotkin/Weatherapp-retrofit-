@@ -1,6 +1,7 @@
 package com.example.weather.presentation.firstscreen
 
 import WeatherViewModel
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
@@ -15,7 +16,9 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.weather.data.NetworkUtils
 import com.example.weather.PogressDialogUtils
 import com.example.weather.R
+import com.example.weather.data.repository.WeatherRepositoryProvider
 import com.example.weather.domain.repository.IWeatherRepository
+import com.example.weather.presentation.secondscreen.SecondScreenActivity
 import com.example.weather.retrofit.IWeatherNetwork
 import com.example.weather.retrofit.WeatherNetwork
 import kotlinx.coroutines.CoroutineScope
@@ -26,7 +29,7 @@ import kotlinx.coroutines.withContext
 class FirstScreenActivity : AppCompatActivity(), OnClickListener {
     private lateinit var weatherViewModel: WeatherViewModel
     private val weatherNetwork : IWeatherNetwork = WeatherNetwork()
-    private val weatherRepository : IWeatherRepository =   IWeatherRepository.getWeatherRepository(weatherNetwork)
+    private val weatherRepository : IWeatherRepository =   WeatherRepositoryProvider.weatherRepository
     private val networkUtils = NetworkUtils(this@FirstScreenActivity)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,14 +38,18 @@ class FirstScreenActivity : AppCompatActivity(), OnClickListener {
         val editText = findViewById<EditText>(R.id.editText)
         val textView = findViewById<TextView>(R.id.textView)
         val button = findViewById<Button>(R.id.button)
+        val secondButton = findViewById<Button>(R.id.secondButton)
 
         weatherViewModel = ViewModelProvider(this).get(WeatherViewModel::class.java)
-        weatherViewModel.weatherInfo.observe(this) { weather ->
+        weatherViewModel.weatherInfo.observe(this) {weather ->
             textView.text = weather
         }
 
 
-
+        secondButton.setOnClickListener {
+            val intent = Intent(this, SecondScreenActivity::class.java)
+            startActivity(intent)
+        }
         button.setOnClickListener {
             val city = editText.text.toString().trim()
             val progressDialogUtils = PogressDialogUtils(this@FirstScreenActivity)

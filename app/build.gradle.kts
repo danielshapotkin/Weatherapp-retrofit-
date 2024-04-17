@@ -41,6 +41,9 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1")
     implementation ("androidx.lifecycle:lifecycle-livedata-ktx:2.7.0")
     implementation("androidx.activity:activity-ktx:1.8.2")
+    implementation("com.squareup.picasso:picasso:2.71828")
+
+
 
 
     implementation("androidx.core:core-ktx:1.12.0")
