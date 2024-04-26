@@ -22,4 +22,13 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/ImageView" />
 
+    <Button
+        android:id="@+id/dialogFragmentButton"
+        android:text="DialogFragment"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textView" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

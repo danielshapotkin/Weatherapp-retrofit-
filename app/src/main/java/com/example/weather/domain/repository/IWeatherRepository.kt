@@ -1,13 +1,12 @@
 package com.example.weather.domain.repository
 
+import WeatherNetwork
 import com.example.weather.data.repository.WeatherRepository
-import com.example.weather.domain.entity.Weather
-import com.example.weather.retrofit.IWeatherNetwork
 import java.io.File
 
 interface IWeatherRepository {
     companion object {
-        fun getWeatherRepository(weatherNetwork: IWeatherNetwork): IWeatherRepository {
+        fun getWeatherRepository(weatherNetwork: WeatherNetwork): IWeatherRepository {
             return WeatherRepository(weatherNetwork)
         }
     }

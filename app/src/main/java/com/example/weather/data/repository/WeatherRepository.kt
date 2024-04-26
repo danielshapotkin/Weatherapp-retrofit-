@@ -1,12 +1,28 @@
 package com.example.weather.data.repository
 
+import WeatherNetwork
 import com.example.weather.domain.repository.IWeatherRepository
-import com.example.weather.retrofit.IWeatherNetwork
 import com.example.weather.domain.entity.Weather
 
-// Класс WeatherRepository реализует интерфейс IWeatherRepository
-class WeatherRepository(val weatherNetwork: IWeatherNetwork) : IWeatherRepository {
 
+class WeatherRepository(val weatherNetwork: WeatherNetwork) : IWeatherRepository {
+    companion object {
+
+        @Volatile
+        private var instance: WeatherRepository? = null
+
+        fun getInstance(weatherNetwork: WeatherNetwork):WeatherRepository{
+
+        if (instance == null) {
+            synchronized(this) {
+                if (instance == null) {
+                    instance = WeatherRepository(weatherNetwork)
+                }
+            }
+        }
+        return instance!!
+    }
+    }
     // Приватная переменная для кэширования погодных данных
     private var cachedWeather: Weather? = null
 

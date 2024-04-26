@@ -1,9 +1,8 @@
-package com.example.weather
+package com.example.weather.data
 
 
 import android.app.ProgressDialog
 import android.content.Context
-import android.net.ConnectivityManager
 
 class PogressDialogUtils(private val context: Context) {
     private val progressDialog = ProgressDialog(context).apply{

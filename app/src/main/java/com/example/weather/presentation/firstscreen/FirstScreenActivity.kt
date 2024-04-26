@@ -1,11 +1,10 @@
 package com.example.weather.presentation.firstscreen
 
-import WeatherViewModel
+import WeatherNetwork
+import com.example.weather.data.WeatherViewModel
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.View
-import android.view.View.OnClickListener
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
@@ -14,37 +13,34 @@ import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 import androidx.lifecycle.ViewModelProvider
 import com.example.weather.data.NetworkUtils
-import com.example.weather.PogressDialogUtils
+import com.example.weather.data.PogressDialogUtils
 import com.example.weather.R
-import com.example.weather.data.repository.WeatherRepositoryProvider
+import com.example.weather.data.repository.WeatherRepository
 import com.example.weather.domain.repository.IWeatherRepository
 import com.example.weather.presentation.secondscreen.SecondScreenActivity
-import com.example.weather.retrofit.IWeatherNetwork
-import com.example.weather.retrofit.WeatherNetwork
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class FirstScreenActivity : AppCompatActivity(), OnClickListener {
+class FirstScreenActivity : AppCompatActivity() {
     private lateinit var weatherViewModel: WeatherViewModel
-    private val weatherNetwork : IWeatherNetwork = WeatherNetwork()
-    private val weatherRepository : IWeatherRepository =   WeatherRepositoryProvider.weatherRepository
+    private val weatherNetwork: WeatherNetwork = WeatherNetwork()
+    private val weatherRepository : IWeatherRepository =   WeatherRepository.getInstance(weatherNetwork)
     private val networkUtils = NetworkUtils(this@FirstScreenActivity)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        val API_KEY = "9cbbdbaf4f0aa3a2b5558f122d628b22"
         val editText = findViewById<EditText>(R.id.editText)
         val textView = findViewById<TextView>(R.id.textView)
         val button = findViewById<Button>(R.id.button)
         val secondButton = findViewById<Button>(R.id.secondButton)
 
+
         weatherViewModel = ViewModelProvider(this).get(WeatherViewModel::class.java)
         weatherViewModel.weatherInfo.observe(this) {weather ->
             textView.text = weather
         }
-
 
         secondButton.setOnClickListener {
             val intent = Intent(this, SecondScreenActivity::class.java)
@@ -86,7 +82,5 @@ class FirstScreenActivity : AppCompatActivity(), OnClickListener {
 
     }
 
-    override fun onClick(v: View?) {
 
-    }
 }
