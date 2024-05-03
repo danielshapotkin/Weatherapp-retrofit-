@@ -5,7 +5,7 @@ import com.example.weather.domain.repository.IWeatherRepository
 import com.example.weather.domain.entity.Weather
 
 
-class WeatherRepository private constructor(private val weatherNetwork: WeatherNetwork) : IWeatherRepository {
+class WeatherRepository(private val weatherNetwork: WeatherNetwork) : IWeatherRepository {
     companion object {
 
         @Volatile

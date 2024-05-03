@@ -7,13 +7,15 @@ import android.widget.Button
 import android.widget.ImageView
 import androidx.fragment.app.DialogFragment
 import com.example.weather.R
+import com.example.weather.data.PogressDialogUtils
 import com.example.weather.domain.ImageListener
-import com.example.weather.presentation.secondscreen.SecondScreenActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 
+
 class DialogFragment : DialogFragment() {
+    private val  imageDownloader = ImageDownloader(requireContext())
     private lateinit var btnCancel: Button
     private lateinit var btnUpdate: Button
     private lateinit var btnSelect: Button
@@ -42,16 +44,20 @@ class DialogFragment : DialogFragment() {
         }
 
         btnUpdate.setOnClickListener {
-            val  imageDownloader = ImageDownloader(requireContext(), imageView)
+            val progressDialog = PogressDialogUtils(requireContext())
+            progressDialog.showProgressDialog()
             CoroutineScope(MainScope().coroutineContext).launch {
-                val bitmap = imageDownloader.downloadImage("https://picsum.photos/200")
-                imageDownloader.displayImage(bitmap)
+                imageView.setImageBitmap(imageDownloader.downloadImage("https://picsum.photos/200"))
             }
+            progressDialog.dismissProgressDialog()
         }
 
         btnSelect.setOnClickListener {
+            if (imageView.drawable!=null)
+            {
                 imageListener.onImageSelected(imageView.drawable)
-            dismiss()
+                dismiss()
+            }
         }
 
         return view

@@ -4,41 +4,46 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.provider.MediaStore
 import android.widget.ImageView
+import com.example.weather.data.repository.WeatherRepository
+import com.example.weather.domain.IImageDownloader
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import okhttp3.ResponseBody
+import retrofit2.Retrofit
+import retrofit2.http.GET
+import retrofit2.http.Url
+import java.io.FileNotFoundException
 import java.io.OutputStream
 import java.net.HttpURLConnection
 import java.net.URL
 
-class ImageDownloader(private val context: Context, private val imageView: ImageView) {
-
-    suspend fun downloadImage(urlString: String?): Bitmap? {
-        var bitmap: Bitmap? = null
-
-        withContext(Dispatchers.IO) {
-            try {
-                val url = URL(urlString)
-                val connection = url.openConnection() as HttpURLConnection
-                connection.doInput = true
-                connection.connect()
-                val inputStream = connection.inputStream
-                bitmap = BitmapFactory.decodeStream(inputStream)
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }
-
-        return bitmap
+class ImageDownloader (private val context: Context) : IImageDownloader{
+    interface ApiService {
+        @GET
+        suspend fun downloadImage(@Url url: String): ResponseBody
     }
 
-    suspend fun displayImage(bitmap: Bitmap?) {
-        bitmap?.let {
-            imageView.setImageBitmap(it)
-            saveImageToExternalStorage(it)
+    override suspend fun downloadImage(urlString: String?): Bitmap? {
+        if (urlString.isNullOrEmpty()) return null
+
+        val retrofit = Retrofit.Builder()
+            .baseUrl("https://picsum.photos/")
+            .build()
+
+        val apiService = retrofit.create(ApiService::class.java)
+
+        return try {
+            val response = apiService.downloadImage(urlString)
+            val inputStream = response.byteStream()
+            BitmapFactory.decodeStream(inputStream)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
         }
     }
 
-    private suspend fun saveImageToExternalStorage(bitmap: Bitmap) {
+
+    override suspend fun saveImageToExternalStorage(bitmap: Bitmap) {
         withContext(Dispatchers.IO) {
             val contentValues = ContentValues().apply {
                 put(MediaStore.Images.Media.DISPLAY_NAME, "iiiimage.jpg")
@@ -47,18 +52,24 @@ class ImageDownloader(private val context: Context, private val imageView: Image
                 put(MediaStore.Images.Media.HEIGHT, bitmap.height)
             }
 
+
             val resolver = context.contentResolver
 
             resolver.run {
                 val imageUri = insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
-                imageUri?.let {
-                    val outputStream: OutputStream? = imageUri.let { uri ->
-                        openOutputStream(uri)
-                    }
-                    outputStream?.use { out ->
-                        bitmap.compress(Bitmap.CompressFormat.JPEG, 90, out)
+                try {
+                    imageUri?.let {
+                        val outputStream: OutputStream? = openOutputStream(imageUri)
+                        outputStream?.use {
+                            bitmap.compress(Bitmap.CompressFormat.JPEG, 90, it)
+                        }
                     }
                 }
+                catch (e: FileNotFoundException){
+                    e.printStackTrace()
+                }
+
+
             }
         }
     }

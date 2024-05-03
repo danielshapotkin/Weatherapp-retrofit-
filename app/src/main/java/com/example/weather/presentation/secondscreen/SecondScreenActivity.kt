@@ -24,6 +24,8 @@ import java.io.File
 import java.io.FileOutputStream
 import java.net.HttpURLConnection
 import java.net.URL
+import com.example.weather.data.PogressDialogUtils
+
 
 
 class SecondScreenActivity : AppCompatActivity(), ImageListener {
@@ -31,7 +33,6 @@ class SecondScreenActivity : AppCompatActivity(), ImageListener {
     private lateinit var textView: TextView
     private lateinit var imageView: ImageView
     private lateinit var dialogFragmentButton: Button
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_secondscreen)
@@ -46,10 +47,9 @@ class SecondScreenActivity : AppCompatActivity(), ImageListener {
             dialogFragment.show(supportFragmentManager, "MyDialog")
         }
 
-        val imageDownloader = ImageDownloader(this, imageView)
+        val imageDownloader = ImageDownloader(this)
         lifecycleScope.launch {
-            val bitmap = imageDownloader.downloadImage("https://picsum.photos/200")
-            imageDownloader.displayImage(bitmap)
+           imageView.setImageBitmap(imageDownloader.downloadImage("https://picsum.photos/200"))
         }
 
         weatherViewModel = ViewModelProvider(this).get(WeatherViewModel::class.java)
