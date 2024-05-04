@@ -42,6 +42,7 @@ dependencies {
     implementation ("androidx.lifecycle:lifecycle-livedata-ktx:2.7.0")
     implementation("androidx.activity:activity-ktx:1.8.2")
     implementation("com.squareup.picasso:picasso:2.71828")
+    implementation("androidx.fragment:fragment-ktx:1.7.0")
 
 
 

@@ -1,3 +1,6 @@
+package com.example.weather.presentation.secondscreen
+
+import ImageDownloader
 import android.app.Dialog
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,7 +10,7 @@ import android.widget.Button
 import android.widget.ImageView
 import androidx.fragment.app.DialogFragment
 import com.example.weather.R
-import com.example.weather.data.PogressDialogUtils
+import com.example.weather.data.ProgressDialogUtils
 import com.example.weather.domain.ImageListener
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
@@ -44,7 +47,7 @@ class DialogFragment : DialogFragment() {
         }
 
         btnUpdate.setOnClickListener {
-            val progressDialog = PogressDialogUtils(requireContext())
+            val progressDialog = ProgressDialogUtils(requireContext())
             progressDialog.showProgressDialog()
             CoroutineScope(MainScope().coroutineContext).launch {
                 imageView.setImageBitmap(imageDownloader.downloadImage("https://picsum.photos/200"))
