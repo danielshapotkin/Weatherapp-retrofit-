@@ -27,6 +27,9 @@ class Fragment2 : Fragment() {
     private val weatherNetwork: WeatherNetwork = WeatherNetwork()
     private val weatherRepository : IWeatherRepository =   WeatherRepository.getInstance(weatherNetwork)
 
+
+
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -38,22 +41,20 @@ class Fragment2 : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         textView = view.findViewById(R.id.textView)
         resultTextView = view.findViewById(R.id.resultTextView)
-        val fragment1 = Fragment1()
-        fragment1.setFragment2(this)
         weatherViewModel = ViewModelProvider(this).get(WeatherViewModel::class.java)
         weatherViewModel.weatherInfo.observe(viewLifecycleOwner) {weather ->
-            textView.text = weather
+            resultTextView.text = weather
         }
     }
 
     fun updateTextView (city: String){
         textView.text = city
-        getWeather(city)
     }
 
     fun getWeather(city: String){
         CoroutineScope(Dispatchers.Main).launch {
-            ProgressDialogUtils(requireContext()).showProgressDialog()
+            val pd = ProgressDialogUtils(requireContext())
+            pd.showProgressDialog()
             try {
                 if (!NetworkUtils(requireContext()).isNetworkAvailable()) {
                     throw Exception("Отсутствует интернет-соединение")
@@ -68,7 +69,7 @@ class Fragment2 : Fragment() {
                     else -> "Ошибка, город $city не найден"
                 }
             } finally {
-                ProgressDialogUtils(requireContext()).dismissProgressDialog()
+                pd.dismissProgressDialog()
             }
         }
     }

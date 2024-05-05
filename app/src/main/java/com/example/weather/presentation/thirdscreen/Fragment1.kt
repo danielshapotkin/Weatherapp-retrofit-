@@ -18,7 +18,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class Fragment1 : Fragment() {
-    private var fragment2 : Fragment2? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_1, container, false)
@@ -31,13 +30,13 @@ class Fragment1 : Fragment() {
 
         button.setOnClickListener(){
                 val city = editText.text.toString().trim()
+                val fragment2 = requireActivity().supportFragmentManager.findFragmentById(R.id.fragment_container2) as? Fragment2
                 fragment2?.updateTextView(city)
+                fragment2?.getWeather(city)
         }
     }
 
 
-    fun setFragment2(fr: Fragment2){
-        fragment2 = fr
-    }
+
 
 }
