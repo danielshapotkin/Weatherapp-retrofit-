@@ -1,6 +1,5 @@
 package com.example.weather.presentation.thirdscreen
 
-import WeatherNetwork
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,16 +8,10 @@ import android.widget.Button
 import android.widget.EditText
 import androidx.fragment.app.Fragment
 import com.example.weather.R
-import com.example.weather.data.NetworkUtils
-import com.example.weather.data.ProgressDialogUtils
-import com.example.weather.data.repository.WeatherRepository
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import com.example.weather.domain.ICityListener
 
 class Fragment1 : Fragment() {
-
+private lateinit var thirdScreenActivity: ICityListener
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_1, container, false)
     }
@@ -30,12 +23,13 @@ class Fragment1 : Fragment() {
 
         button.setOnClickListener(){
                 val city = editText.text.toString().trim()
-                val fragment2 = requireActivity().supportFragmentManager.findFragmentById(R.id.fragment_container2) as? Fragment2
-                fragment2?.updateTextView(city)
-                fragment2?.getWeather(city)
+                thirdScreenActivity.onCityUpdated(city)
         }
     }
 
+    fun setActivity(acivity: ICityListener) {
+        thirdScreenActivity = acivity
+    }
 
 
 

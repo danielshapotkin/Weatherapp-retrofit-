@@ -13,6 +13,7 @@ import com.example.weather.data.NetworkUtils
 import com.example.weather.data.ProgressDialogUtils
 import com.example.weather.data.WeatherViewModel
 import com.example.weather.data.repository.WeatherRepository
+import com.example.weather.domain.ICityListener
 import com.example.weather.domain.repository.IWeatherRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -20,14 +21,12 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 
-class Fragment2 : Fragment() {
+class Fragment2 : Fragment(), ICityListener {
     private lateinit var textView: TextView
     private lateinit var resultTextView: TextView
     private lateinit var weatherViewModel: WeatherViewModel
     private val weatherNetwork: WeatherNetwork = WeatherNetwork()
     private val weatherRepository : IWeatherRepository =   WeatherRepository.getInstance(weatherNetwork)
-
-
 
 
     override fun onCreateView(
@@ -72,6 +71,11 @@ class Fragment2 : Fragment() {
                 pd.dismissProgressDialog()
             }
         }
+    }
+
+    override fun onCityUpdated(city: String) {
+        updateTextView(city)
+        getWeather(city)
     }
 
 }
