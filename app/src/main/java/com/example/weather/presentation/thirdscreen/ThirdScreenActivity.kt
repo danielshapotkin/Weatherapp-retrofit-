@@ -3,9 +3,9 @@ package com.example.weather.presentation.thirdscreen
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.example.weather.R
-import com.example.weather.domain.ICityListener
+import com.example.weather.domain.IListener
 
-class ThirdScreenActivity : AppCompatActivity(), ICityListener {
+class ThirdScreenActivity : AppCompatActivity(), IListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_third_screen)
@@ -14,7 +14,7 @@ class ThirdScreenActivity : AppCompatActivity(), ICityListener {
 
         val fragment1 = Fragment1()
         val fragment2 = Fragment2()
-        fragment1.setActivity(this)
+        fragment1.setListener(this)
 
         fragmentTransaction.replace(R.id.fragment_container1, fragment1)
 
