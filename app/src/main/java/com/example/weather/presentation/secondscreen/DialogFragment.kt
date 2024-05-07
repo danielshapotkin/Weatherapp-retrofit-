@@ -11,6 +11,7 @@ import android.widget.ImageView
 import androidx.fragment.app.DialogFragment
 import com.example.weather.R
 import com.example.weather.data.ProgressDialogUtils
+import com.example.weather.domain.IImageDownloader
 import com.example.weather.domain.ImageListener
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
@@ -18,7 +19,7 @@ import kotlinx.coroutines.launch
 
 
 class DialogFragment : DialogFragment() {
-    private val  imageDownloader = ImageDownloader(requireContext())
+    private lateinit var imageDownloader : IImageDownloader
     private lateinit var btnCancel: Button
     private lateinit var btnUpdate: Button
     private lateinit var btnSelect: Button
@@ -36,7 +37,7 @@ class DialogFragment : DialogFragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.dialog_layout, container, false)
-
+        imageDownloader = ImageDownloader(requireContext())
         btnCancel = view.findViewById(R.id.cancelButton)
         btnUpdate = view.findViewById(R.id.updateButton)
         btnSelect = view.findViewById(R.id.selectButton)
@@ -50,7 +51,9 @@ class DialogFragment : DialogFragment() {
             val progressDialog = ProgressDialogUtils(requireContext())
             progressDialog.showProgressDialog()
             CoroutineScope(MainScope().coroutineContext).launch {
-                imageView.setImageBitmap(imageDownloader.downloadImage("https://picsum.photos/200"))
+                imageDownloader.downloadImage("https://picsum.photos/200")?.let {
+                    imageView.setImageBitmap(it)
+                }
             }
             progressDialog.dismissProgressDialog()
         }
