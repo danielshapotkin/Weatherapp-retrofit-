@@ -13,7 +13,8 @@ import com.example.weather.data.NetworkUtils
 import com.example.weather.data.ProgressDialogUtils
 import com.example.weather.data.WeatherViewModel
 import com.example.weather.data.repository.WeatherRepository
-import com.example.weather.domain.ICityListener
+import com.example.weather.domain.IListener
+import com.example.weather.domain.repository.ISwitchListener
 import com.example.weather.domain.repository.IWeatherRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -21,7 +22,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 
-class Fragment2 : Fragment(), ICityListener {
+class Fragment2 : Fragment(), IListener, ISwitchListener {
     private lateinit var textView: TextView
     private lateinit var resultTextView: TextView
     private lateinit var weatherViewModel: WeatherViewModel
@@ -77,5 +78,14 @@ class Fragment2 : Fragment(), ICityListener {
         updateTextView(city)
         getWeather(city)
     }
+
+    override fun onChecked() {
+        textView.text = "Checked"
+    }
+
+    override fun onUnChecked() {
+        textView.text = ""
+    }
+
 
 }

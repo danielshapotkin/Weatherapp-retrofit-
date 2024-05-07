@@ -6,12 +6,17 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import android.widget.Switch
+import androidx.appcompat.widget.SwitchCompat
 import androidx.fragment.app.Fragment
 import com.example.weather.R
-import com.example.weather.domain.ICityListener
+import com.example.weather.domain.IListener
+import com.example.weather.domain.repository.ISwitchListener
 
 class Fragment1 : Fragment() {
-private lateinit var thirdScreenActivity: ICityListener
+    private lateinit var listener: IListener
+    private lateinit var switchListener: ISwitchListener
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_1, container, false)
     }
@@ -20,16 +25,32 @@ private lateinit var thirdScreenActivity: ICityListener
 
         val editText = view.findViewById<EditText>(R.id.editText1)
         val button = view.findViewById<Button>(R.id.button1)
+        val switch = view.findViewById<SwitchCompat>(R.id.switch1)
+
+
+        switch.setOnCheckedChangeListener{ buttonView, isChecked ->
+            if (isChecked) {
+            switchListener.onChecked()
+            } else {
+            switchListener.onUnChecked()
+            }
+        }
+
 
         button.setOnClickListener(){
                 val city = editText.text.toString().trim()
-                thirdScreenActivity.onCityUpdated(city)
+                listener.onCityUpdated(city)
         }
     }
 
-    fun setActivity(acivity: ICityListener) {
-        thirdScreenActivity = acivity
+    fun setListener(listener: IListener){
+        this.listener = listener
     }
+
+    fun setSwitchListener(listener: ISwitchListener){
+        switchListener  = listener
+    }
+
 
 
 
