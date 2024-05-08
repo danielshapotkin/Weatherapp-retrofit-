@@ -1,6 +1,7 @@
 package com.example.weather.presentation.firstscreen
 
 import WeatherNetwork
+import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.content.Context
 import com.example.weather.data.WeatherViewModel
@@ -36,10 +37,10 @@ import java.util.Date
 
 class FirstScreenActivity : AppCompatActivity() {
     private lateinit var weatherViewModel: WeatherViewModel
-    private lateinit var dbHelper: DBHelper
     private val weatherNetwork: WeatherNetwork = WeatherNetwork()
     private val weatherRepository : IWeatherRepository =   WeatherRepository.getInstance(weatherNetwork)
     private val networkUtils = NetworkUtils(this@FirstScreenActivity)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_firstscreen)
@@ -48,6 +49,12 @@ class FirstScreenActivity : AppCompatActivity() {
         val button = findViewById<Button>(R.id.button)
         val secondButton = findViewById<Button>(R.id.secondButton)
         val thirdButton = findViewById<Button>(R.id.thirdButton)
+        val checkBdButton = findViewById<Button>(R.id.checkBdButton)
+        val bdInfoTW = findViewById<TextView>(R.id.DbInfoTW)
+        val deleteBdInfoButton = findViewById<Button>(R.id.deleteBdInfoButton)
+
+        val dbHelper = DBHelper(this)
+        val db = dbHelper.writableDatabase
 
         weatherViewModel = ViewModelProvider(this).get(WeatherViewModel::class.java)
         weatherViewModel.weatherInfo.observe(this) {weather ->
@@ -65,8 +72,6 @@ class FirstScreenActivity : AppCompatActivity() {
         }
         button.setOnClickListener {
             val cv = ContentValues()
-            dbHelper = DBHelper(this)
-            val db = dbHelper.writableDatabase
             val city = editText.text.toString().trim()
             val progressDialogUtils = ProgressDialogUtils(this@FirstScreenActivity)
 
@@ -81,6 +86,10 @@ class FirstScreenActivity : AppCompatActivity() {
                          weatherRepository.getWeatherByCityName(city)
                     }
                     weatherViewModel.weatherInfo.value = result
+                    cv.put("city", city)
+                    cv.put("temperature", weatherNetwork.getWeatherByCityName(city).main.temp)
+                    cv.put("time", CurrentTime().getCurrentTime())
+                    db.insert("weathertable", null, cv)
                 } catch (e: Exception) {
                     textView.text = when (e.message) {
                         "Отсутствует интернет-соединение" -> "Ошибка, отсутствует интернет-соединение"
@@ -89,10 +98,18 @@ class FirstScreenActivity : AppCompatActivity() {
                 } finally {
                     progressDialogUtils.dismissProgressDialog()
                 }
-                cv.put("city", city)
-                cv.put("temperature", weatherViewModel.weatherInfo.value)
-                cv.put("date", CurrentTime().getCurrentTime())
+
             }
+
+            checkBdButton.setOnClickListener(){
+                dbHelper.readBD(db, bdInfoTW)
+            }
+
+            deleteBdInfoButton.setOnClickListener(){
+                db.delete("weathertable", null, null)
+            }
+
+
 
             // Отмена корутины при уничтожении активности (например, при закрытии приложения)
             lifecycle.addObserver(object : LifecycleObserver {

@@ -29,7 +29,7 @@ class SecondScreenActivity : AppCompatActivity(), ImageListener {
         dialogFragmentButton = findViewById(R.id.dialogFragmentButton)
 
         dialogFragmentButton.setOnClickListener {
-            val dialogFragment = DialogFragment()
+            val dialogFragment = MyDialogFragment()
             dialogFragment.setImageListener(this)
             dialogFragment.show(supportFragmentManager, "MyDialog")
         }

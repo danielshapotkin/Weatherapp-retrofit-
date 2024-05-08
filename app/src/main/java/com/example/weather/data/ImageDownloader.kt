@@ -3,6 +3,8 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.provider.MediaStore
+import android.widget.ImageView
+import com.example.weather.data.repository.WeatherRepository
 import com.example.weather.domain.IImageDownloader
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -12,6 +14,8 @@ import retrofit2.http.GET
 import retrofit2.http.Url
 import java.io.FileNotFoundException
 import java.io.OutputStream
+import java.net.HttpURLConnection
+import java.net.URL
 
 class ImageDownloader (private val context: Context) : IImageDownloader{
     interface ApiService {
