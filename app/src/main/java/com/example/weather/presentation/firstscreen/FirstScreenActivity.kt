@@ -1,5 +1,6 @@
 package com.example.weather.presentation.firstscreen
 
+import MyAdapter
 import WeatherNetwork
 import android.content.ContentValues
 import android.content.Intent
@@ -13,6 +14,8 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.weather.R
 import com.example.weather.data.CurrentTime
 import com.example.weather.data.DBHelper
@@ -45,6 +48,7 @@ class FirstScreenActivity : AppCompatActivity() {
         val bdInfoTW = findViewById<TextView>(R.id.DbInfoTW)
         val deleteBdInfoButton = findViewById<Button>(R.id.btnDelete)
         val btnCheck = findViewById<Button>(R.id.btnCheck)
+        val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
 
         val dbHelper = DBHelper(this)
         val db = dbHelper.writableDatabase // экземпляр базы данных
@@ -98,7 +102,9 @@ class FirstScreenActivity : AppCompatActivity() {
             }
         }
             btnCheck.setOnClickListener(){
-                dbHelper.readDB(db, bdInfoTW)
+                val adapter = MyAdapter(dbHelper.readDB(db))
+                recyclerView.adapter = adapter
+                recyclerView.layoutManager = LinearLayoutManager(this)
             }
             deleteBdInfoButton.setOnClickListener(){
                 try {
@@ -110,8 +116,6 @@ class FirstScreenActivity : AppCompatActivity() {
                     Log.d("Delete records", "Null")
                 }
             }
-
-
 
 
 
