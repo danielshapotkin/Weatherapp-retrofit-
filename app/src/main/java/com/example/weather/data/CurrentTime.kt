@@ -9,6 +9,6 @@ class CurrentTime: ICurrentTime {
         val currentHour = calendar.get(Calendar.HOUR_OF_DAY)
         val currentMinute = calendar.get(Calendar.MINUTE)
         val currentSecond = calendar.get(Calendar.SECOND)
-        return "${currentHour} ${currentMinute} ${currentSecond}"
+        return "${currentHour} : ${currentMinute} : ${currentSecond}"
     }
 }

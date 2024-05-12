@@ -11,33 +11,38 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, "myDB", null, 1), I
 
     override fun onCreate(db: SQLiteDatabase) {
         Log.d("DataBase", "--- onCreate database ---")
-        db.execSQL("create table weathertable ("
-                + "city text,"
+        db.execSQL("create table cityes (id integer primary key autoincrement,"
+                + " name text);")
+        db.execSQL("create table weathers ("
+                + "city_id integer,"
                 + "temperature text,"
-                + "time text" + ");")
+                + "time text,"
+                + "foreign key (city_id) references city(id)"
+                + ");")
     }
+
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
-
     }
 
-    fun readBD(db: SQLiteDatabase, textView: TextView){
-        var stringForTw =  ""
-        val c = db.query("weathertable", null, null, null, null, null, null)
-        if (c.moveToFirst()) {
-            val cityColIndex = c.getColumnIndex("city")
-            val temperatureColIndex = c.getColumnIndex("temperature")
-            val timeColIndex = c.getColumnIndex("time")
+    override fun readDB(db: SQLiteDatabase, textView: TextView) {
+        var stringForTw = ""
+        textView.text = ""
+        val cursor = db.rawQuery("select cityes.name, weathers.temperature, weathers.time from cityes inner join weathers on cityes.id = weathers.city_id", null)
+        if (cursor.moveToFirst()) {
+            val cityColIndex = cursor.getColumnIndex("name")
+            val temperatureColIndex = cursor.getColumnIndex("temperature")
+            val timeColIndex = cursor.getColumnIndex("time")
             do {
-                stringForTw += "\n City = ${c.getString(cityColIndex)}, temp = ${c.getString(temperatureColIndex)}, email = ${c.getString(timeColIndex)}"
-            } while (c.moveToNext())
+                stringForTw += "\n City = ${cursor.getString(cityColIndex)}, temp = ${cursor.getString(temperatureColIndex)}, time = ${cursor.getString(timeColIndex)}"
+            } while (cursor.moveToNext())
             textView.text = buildString {
-                append(textView.toString())
+                append(textView.text.toString())
                 append(stringForTw)
             }
         } else {
             textView.text = "0 rows"
         }
-        c.close()
+        cursor.close()
     }
 }

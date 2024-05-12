@@ -23,6 +23,7 @@
         android:layout_width="200sp"
         android:layout_height="wrap_content"
         android:hint="Введите город"
+        android:minHeight="48dp"
         android:textColorHint="@color/black"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -49,16 +50,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/textView" />
 
-    <Button
-        android:id="@+id/checkBdButton"
-        android:layout_width="107dp"
-        android:layout_height="52dp"
-        android:layout_marginTop="4dp"
-        android:text="Check BD"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/thirdButton" />
 
     <Button
         android:id="@+id/secondButton"
@@ -94,14 +85,25 @@
         app:layout_constraintTop_toTopOf="@+id/editText" />
 
     <Button
-        android:id="@+id/deleteBdInfoButton"
+        android:id="@+id/btnDelete"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="4dp"
+        android:text="Delete records"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnCheck" />
+
+    <Button
+        android:id="@+id/btnCheck"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="Records"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/checkBdButton" />
-
+        app:layout_constraintTop_toBottomOf="@+id/thirdButton" />
 
 
 

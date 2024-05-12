@@ -22,7 +22,6 @@ class Fragment1 : Fragment() {
 
         val editText = view.findViewById<EditText>(R.id.editText1)
         val button = view.findViewById<Button>(R.id.button1)
-        val switch = view.findViewById<SwitchCompat>(R.id.switch1)
 
 
 
