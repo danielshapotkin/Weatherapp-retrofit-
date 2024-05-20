@@ -5,14 +5,10 @@ import WeatherNetwork
 import android.content.ContentValues
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.OnLifecycleEvent
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -24,6 +20,7 @@ import com.example.weather.data.ProgressDialogUtils
 import com.example.weather.data.WeatherViewModel
 import com.example.weather.data.repository.WeatherRepository
 import com.example.weather.domain.repository.IWeatherRepository
+import com.example.weather.presentation.room.RoomActivity
 import com.example.weather.presentation.secondscreen.SecondScreenActivity
 import com.example.weather.presentation.thirdscreen.ThirdScreenActivity
 import kotlinx.coroutines.CoroutineScope
@@ -44,12 +41,13 @@ class FirstScreenActivity : AppCompatActivity() {
         val textView = findViewById<TextView>(R.id.textView)
         val button = findViewById<Button>(R.id.button)
         val secondButton = findViewById<Button>(R.id.secondButton)
+        val btnRoom = findViewById<Button>(R.id.btnRoom)
         val thirdButton = findViewById<Button>(R.id.thirdButton)
-        val bdInfoTW = findViewById<TextView>(R.id.DbInfoTW)
         val deleteBdInfoButton = findViewById<Button>(R.id.btnDelete)
-        val btnCheck = findViewById<Button>(R.id.btnCheck)
         val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
-
+        val adapter = MyAdapter()
+        recyclerView.adapter = adapter
+        recyclerView.layoutManager = LinearLayoutManager(this@FirstScreenActivity)
         val dbHelper = DBHelper(this)
         val db = dbHelper.writableDatabase // экземпляр базы данных
 
@@ -84,13 +82,12 @@ class FirstScreenActivity : AppCompatActivity() {
                     weatherViewModel.weatherInfo.value = result
                     cv.put("name", city)
                     val id = db.insert("cityes", null, cv)
-
-
                     cv = ContentValues()
                     cv.put("city_id", id)
                     cv.put("temperature", weatherNetwork.getWeatherByCityName(city).main.temp)
                     cv.put("time", CurrentTime().getCurrentTime())
                     db.insert("weathers", null, cv)
+                    adapter.setData(dbHelper.readDB(db))
                 } catch (e: Exception) {
                     textView.text = when (e.message) {
                         "Отсутствует интернет-соединение" -> "Ошибка, отсутствует интернет-соединение"
@@ -101,22 +98,17 @@ class FirstScreenActivity : AppCompatActivity() {
                 }
             }
         }
-            btnCheck.setOnClickListener(){
-                val adapter = MyAdapter(dbHelper.readDB(db))
-                recyclerView.adapter = adapter
-                recyclerView.layoutManager = LinearLayoutManager(this)
-            }
+
             deleteBdInfoButton.setOnClickListener(){
-                try {
                     db.delete("cityes", null, null)
                     db.delete("weathers", null, null)
-                }
-                catch (e: NullPointerException)
-                {
-                    Log.d("Delete records", "Null")
-                }
+                    adapter.setData(emptyList())
             }
 
+            btnRoom.setOnClickListener(){
+                val intent = Intent(this, RoomActivity::class.java)
+                startActivity(intent)
+            }
 
 
         }

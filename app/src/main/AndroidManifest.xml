@@ -17,6 +17,9 @@
         android:theme="@style/Theme.Weather"
         tools:targetApi="31">
         <activity
+            android:name=".presentation.room.RoomActivity"
+            android:exported="false" />
+        <activity
             android:name=".presentation.thirdscreen.ThirdScreenActivity"
             android:exported="false" />
         <activity

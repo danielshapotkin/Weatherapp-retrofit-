@@ -34,6 +34,9 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
+    buildFeatures{
+        viewBinding = true
+    }
 }
 
 dependencies {
@@ -46,7 +49,8 @@ dependencies {
     implementation("androidx.fragment:fragment-ktx:1.7.0")
 
 
-
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.7.0")
+    implementation("androidx.room:room-ktx:2.6.1")
     implementation("androidx.core:core-ktx:1.13.0")
     kapt("androidx.room:room-compiler:2.6.1")
     implementation("androidx.core:core-ktx:1.12.0")

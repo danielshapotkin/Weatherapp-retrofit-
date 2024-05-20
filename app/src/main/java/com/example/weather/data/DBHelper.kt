@@ -11,15 +11,27 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, "DataBase", null, 1
 
     override fun onCreate(db: SQLiteDatabase) {
         Log.d("DataBase", "--- onCreate database ---")
-        db.execSQL("create table cityes (id integer primary key autoincrement,"
-                + " name text);")
-        db.execSQL("create table weathers ("
-                + "city_id integer,"
-                + "temperature text,"
-                + "time text,"
-                + "foreign key (city_id) references city(id)"
-                + ");")
+
+        // Создаем таблицу "cityes" с полями "id" и "name"
+        db.execSQL("""
+        CREATE TABLE cityes (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT
+        );
+    """)
+
+        // Создаем таблицу "weathers" с полями "city_id", "temperature" и "time"
+        // А также внешний ключ "city_id", который связывает таблицу "weathers" с таблицей "cityes"
+        db.execSQL("""
+        CREATE TABLE weathers (
+            city_id INTEGER,
+            temperature TEXT,
+            time TEXT,
+            FOREIGN KEY (city_id) REFERENCES cityes(id)
+        );
+    """)
     }
+
 
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
