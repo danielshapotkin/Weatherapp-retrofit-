@@ -5,7 +5,10 @@ import WeatherNetwork
 import android.content.ContentValues
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
+import android.widget.CheckBox
+import android.widget.CheckedTextView
 import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -45,6 +48,7 @@ class FirstScreenActivity : AppCompatActivity() {
         val thirdButton = findViewById<Button>(R.id.thirdButton)
         val deleteBdInfoButton = findViewById<Button>(R.id.btnDelete)
         val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
+        val checkBox = findViewById<CheckBox>(R.id.checkBox)
         val adapter = MyAdapter()
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(this@FirstScreenActivity)
@@ -86,6 +90,7 @@ class FirstScreenActivity : AppCompatActivity() {
                     cv.put("city_id", id)
                     cv.put("temperature", weatherNetwork.getWeatherByCityName(city).main.temp)
                     cv.put("time", CurrentTime().getCurrentTime())
+                    cv.put("favorite", if (checkBox.isChecked) 1 else 0)
                     db.insert("weathers", null, cv)
                     adapter.setData(dbHelper.readDB(db))
                 } catch (e: Exception) {
